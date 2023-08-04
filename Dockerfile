@@ -51,11 +51,11 @@ WORKDIR /opt
 # install python packages
 COPY pyproject.toml poetry.lock /opt/FaceVerse/
 RUN cd FaceVerse/ \
-    && poetry install
+    && poetry install --no-root
 
 # download the 3D model
 RUN wget "https://drive.google.com/uc?export=download&id=1WrQ1UNMY30YAl8WxAbqVb6ZsPEQ_FHW4" -O faceverse_v3_6_s.npy
 
 # copy sources
-COPY faceversev3_jittor /opt/
-RUN mv faceverse_v3_6_s.npy /opt/faceversev3_jittor/data/
+COPY faceversev3_jittor /opt/FaceVerse/
+RUN mv faceverse_v3_6_s.npy /opt/FaceVerse/faceversev3_jittor/data/
