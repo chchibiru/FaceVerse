@@ -18,6 +18,7 @@ from util_functions import get_length, ply_from_array_color
 num_queue = Queue()
 out_queue = Queue()
 image_queue = Queue()
+coeff_queue = Queue()
 
 
 class Tracking(threading.Thread):
@@ -166,6 +167,7 @@ class Tracking(threading.Thread):
                 num_queue.put(frame_num)
                 out_queue.put(outimg)
                 image_queue.put(drive_img)
+                coeff_queue.put(coeffs)
                 self.queue_num += 1
                 self.thread_lock.release()
             self.frame_ind += 1
@@ -223,6 +225,8 @@ if __name__ == '__main__':
     tracking.start()
 
     os.makedirs(args.res_folder, exist_ok=True)
+    # 3dmm parameters
+    os.makedirs(os.path.join(args.res_folder, 'coeffs'), exist_ok=True)
     if args.save_for_styleavatar:
         os.makedirs(os.path.join(args.res_folder, 'image'), exist_ok=True)
         os.makedirs(os.path.join(args.res_folder, 'uv'), exist_ok=True)
@@ -244,15 +248,17 @@ if __name__ == '__main__':
         fn = num_queue.get()
         out = out_queue.get()
         tar = image_queue.get()
+        co = coeff_queue.get()
         tracking.thread_lock.release()
         tracking.queue_num -= 1
-        cv2.imshow('faceverse_offline', tar[:, :, ::-1])
+        # cv2.imshow('faceverse_offline', tar[:, :, ::-1])
         keyc = cv2.waitKey(1)
         if keyc == ord('q') or keyc == 27 or tracking.thread_exit == True:
             tracking.thread_exit = True
             break
         #out_video.write(cv2.cvtColor(out, cv2.COLOR_RGB2BGR))
         tar_video.write(cv2.cvtColor(tar, cv2.COLOR_RGB2BGR))
+        np.savetxt(os.path.join(args.res_folder, 'coeffs', str(fn).zfill(6) + '.txt'), co, fmt='%.3f')
         if args.save_for_styleavatar:
             cv2.imwrite(os.path.join(args.res_folder, 'image', str(fn).zfill(6) + '.png'), cv2.cvtColor(out, cv2.COLOR_RGB2BGR))
             cv2.imwrite(os.path.join(args.res_folder, 'render', str(fn).zfill(6) + '.png'), cv2.cvtColor(tar[:, args.tar_size:args.tar_size * 2], cv2.COLOR_RGB2BGR))
