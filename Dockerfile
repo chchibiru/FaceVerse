@@ -25,7 +25,7 @@ RUN apt-get -y update \
         libreadline-dev \
         libsqlite3-dev \
         libssl-dev \
-	      pkg-config \
+        pkg-config \
         tk-dev \
         uuid-dev \
         wget \
@@ -57,5 +57,5 @@ RUN cd FaceVerse/ \
 RUN wget "https://drive.google.com/uc?export=download&id=1WrQ1UNMY30YAl8WxAbqVb6ZsPEQ_FHW4" -O faceverse_v3_6_s.npy
 
 # copy sources
-COPY faceversev3_jittor /opt/FaceVerse/
+COPY faceversev3_jittor /opt/FaceVerse/faceversev3_jittor
 RUN mv faceverse_v3_6_s.npy /opt/FaceVerse/faceversev3_jittor/data/
